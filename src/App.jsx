@@ -1,4 +1,20 @@
-import { useEffect, useState, useMemo } from "react"
+import React, { useEffect, useState, useMemo } from "react"
+
+const PoliticianCard = React.memo(function PoliticianCard({ politician }) {
+  console.log(`Rendering della card ${politician.name}`);
+  return (
+    <li><div>
+      <h3>Name: {politician.name}</h3>
+      <img src={politician.image || "/placeholder.jpg"} alt={politician.name}
+        onError={(e) => {
+          e.target.src = "/placeholder.jpg";
+        }} />
+      <p><strong>Position:</strong> {politician.position}</p>
+      <p><strong>Biography:</strong> {politician.biography}</p>
+    </div>
+    </li>
+  )
+})
 
 
 function App() {
@@ -23,7 +39,7 @@ function App() {
 
   const filteredPoliticians = useMemo(() => {
     return politiciansList.filter(p => p.name.toLowerCase().includes(search.toLocaleLowerCase()) || p.biography.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
-  }, [search])
+  }, [politiciansList, search]);
 
   return (
     <>
@@ -35,16 +51,7 @@ function App() {
         placeholder="Cerca politico..." />
 
       <ul>
-        {filteredPoliticians && filteredPoliticians.map(politician => <li key={politician.id}><div>
-          <h3>Name: {politician.name}</h3>
-          <img src={politician.image || "/placeholder.jpg"} alt={politician.name}
-            onError={(e) => {
-              e.target.src = "/placeholder.jpg";
-            }} />
-          <p><strong>Position:</strong> {politician.position}</p>
-          <p><strong>Biography:</strong> {politician.biography}</p>
-        </div>
-        </li>)}
+        {filteredPoliticians && filteredPoliticians.map(politician => <PoliticianCard key={politician.id} politician={politician} />)}
       </ul>
     </>
   )
