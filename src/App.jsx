@@ -21,6 +21,7 @@ function App() {
 
   const [politiciansList, setPoliticiansList] = useState([]);
   const [search, setSearch] = useState('');
+  const [select, setSelect] = useState('');
 
   useEffect(() => {
     async function politiciansFetch() {
@@ -37,9 +38,25 @@ function App() {
     politiciansFetch();
   }, []);
 
+
+
+  const positionArray = useMemo(() => {
+    const positionArray = [];
+
+    politiciansList.forEach((p) => {
+      if (!positionArray.includes(p.position)) {
+        positionArray.push(p.position);
+      }
+    })
+
+    return positionArray;
+  }, [politiciansList])
+
+
   const filteredPoliticians = useMemo(() => {
-    return politiciansList.filter(p => p.name.toLowerCase().includes(search.toLocaleLowerCase()) || p.biography.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
-  }, [politiciansList, search]);
+    return politiciansList.filter(p => (p.name.toLowerCase().includes(search.toLocaleLowerCase()) || p.biography.toLocaleLowerCase().includes(search.toLocaleLowerCase())) && (select === '' || p.position === select))
+
+  }, [politiciansList, search, select]);
 
   return (
     <>
@@ -49,6 +66,11 @@ function App() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Cerca politico..." />
+
+      <select value={select} onChange={(e) => setSelect(e.target.value)}>
+        <option value="">Posizione</option>
+        {positionArray && positionArray.map(p => <option key={p} value={p}>{p}</option>)}
+      </select>
 
       <ul>
         {filteredPoliticians && filteredPoliticians.map(politician => <PoliticianCard key={politician.id} politician={politician} />)}
